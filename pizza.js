@@ -30,8 +30,7 @@ async function chooseBestOptionPizza(memoized, totalPizza, teamDistribution){
             return memoized
         teamDistribution.team2 += 1;
         memoized.team2 -= 1;
-    }
-    
+    }    
     return memoized;
 }
 
