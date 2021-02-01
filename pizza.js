@@ -4,33 +4,23 @@ async function chooseBestOptionPizza(memoized, totalPizza, teamDistribution){
         return memoized;
     } 
 
-    if(totalPizza >= 4 && teamDistribution.team4 > 0){
-        teamDistribution.team4 -= 1;
-        memoized.team4 += 1;
-        await chooseBestOptionPizza(memoized, totalPizza - 4, teamDistribution);
-        if(memoized.done)
-            return memoized
-        teamDistribution.team4 += 1;
-        memoized.team4 -= 1;
+    for (const team in teamDistribution){
+        let personByTeam = parseInt(team.slice(-1))
+        
+        if(totalPizza >= personByTeam && teamDistribution[team] > 0){
+            teamDistribution[team] -= 1;
+            memoized[team] += 1;
+
+            await chooseBestOptionPizza(memoized, totalPizza - personByTeam, teamDistribution);
+            
+            if(memoized.done)
+                return memoized
+            
+            teamDistribution[team] += 1;
+            memoized[team] -= 1;
+        }
     }
-    if(totalPizza >= 3 && teamDistribution.team3 > 0){
-        teamDistribution.team3 -= 1;
-        memoized.team3 += 1;
-        await chooseBestOptionPizza(memoized, totalPizza - 3, teamDistribution);
-        if(memoized.done)
-            return memoized
-        teamDistribution.team3 += 1;
-        memoized.team3 -= 1;
-    }
-    if(totalPizza >= 2 && teamDistribution.team2 > 0){
-        teamDistribution.team2 -= 1;
-        memoized.team2 += 1;
-        await chooseBestOptionPizza(memoized, totalPizza - 2, teamDistribution);
-        if(memoized.done)
-            return memoized
-        teamDistribution.team2 += 1;
-        memoized.team2 -= 1;
-    }    
+
     return memoized;
 }
 
@@ -47,10 +37,10 @@ async function choosePizzasForEachTeam(totalPizza, teamDistribution){
 
 const teamD = {
     team2: 1,
-    team3: 1,
+    team3: 2,
     team4: 1
 }
 
-const pizzas = 1
+const pizzas = 5
 
 choosePizzasForEachTeam(pizzas, teamD);
