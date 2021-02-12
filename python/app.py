@@ -38,6 +38,22 @@ def reshape_distribution(quantity_of_pizzas, team_distribution, memoized=None):
     return True, memoized
 
 
+def pizzas_to_deliver_v1(team_distribution, pizzas):
+    total_teams = sum(team_distribution.values())
+    output = str(total_teams) + "\n"
+
+    for index, value in team_distribution.items():
+        for _ in range(value):
+            ppt = index[-1]
+            output += ppt
+            for pizzas_per_team in range(int(ppt)):
+                pizza = pizzas.pop(0)
+                output += " " + str(pizza['line'])
+            output += "\n"
+        
+    return output
+
+
 def main(input_file):
     quantity_of_pizzas, team_distribution, pizzas = read_input_file(input_file)
     quantity_of_people = count_people_from_teams(team_distribution)
@@ -46,8 +62,9 @@ def main(input_file):
         _, team_distribution = reshape_distribution(quantity_of_pizzas, team_distribution)
         team_distribution = dict(team_distribution)
 
+    print(pizzas_to_deliver_v1(team_distribution, pizzas))
+    print(team_distribution) ## first output
     print(pizzas)
-    print(team_distribution)
     print(quantity_of_pizzas)
 
 
