@@ -29,7 +29,11 @@ def read_input_file(filename):
         pizzas = list(search_pizzas(input_lines))
          
     pizzas = sort_max_to_min_ingredients(pizzas)
-
     team_distribution = zip(("team_2", "team_3", "team_4"), people_by_team)
 
     return quantity_of_pizzas, dict(team_distribution), pizzas 
+
+
+def write_output_file(filename, content):
+    with open(f'outputs/{filename}', 'w') as f:
+        f.write('\n'.join(content))
