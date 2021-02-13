@@ -1,7 +1,7 @@
 import os
 import sys
 from collections import defaultdict
-from files_manager import read_input_file
+from files_manager import read_input_file, write_output_file
 
 
 def count_people_from_teams(team_distribution):
@@ -15,7 +15,8 @@ def reshape_distribution(quantity_of_pizzas, team_distribution, memoized=None):
     memoized = memoized or defaultdict(int)
 
     if quantity_of_pizzas == 0:
-        return True, memoized
+        memoized['done'] = True
+        return memoized
         
     for team in team_distribution.keys():
         person_by_team = int(team[-1])
@@ -26,31 +27,31 @@ def reshape_distribution(quantity_of_pizzas, team_distribution, memoized=None):
         team_distribution[team] -= 1
         memoized[team] += 1
 
-        quantity_of_pizzas -= person_by_team
-        done, memoized = reshape_distribution(quantity_of_pizzas, team_distribution, memoized)
+        memoized = reshape_distribution(quantity_of_pizzas - person_by_team, team_distribution, memoized)
         
-        if done:
-            return done, memoized
+        if memoized.get('done'):
+            return memoized
         
         team_distribution[team] += 1
         memoized[team] -= 1
 
-    return True, memoized
+    return memoized
 
 
 def pizzas_to_deliver_v1(team_distribution, pizzas):
     total_teams = sum(team_distribution.values())
-    output = str(total_teams) + "\n"
+    output = [str(total_teams)]
 
     for index, value in team_distribution.items():
         for _ in range(value):
             ppt = index[-1]
-            output += ppt
-            for pizzas_per_team in range(int(ppt)):
+            line = ppt
+            for _ in range(int(ppt)):
                 pizza = pizzas.pop(0)
-                output += " " + str(pizza['line'])
-            output += "\n"
-        
+                line += f" {pizza['line']}"
+                
+            output.append(line)
+
     return output
 
 
@@ -59,13 +60,14 @@ def main(input_file):
     quantity_of_people = count_people_from_teams(team_distribution)
 
     if quantity_of_pizzas < quantity_of_people:
-        _, team_distribution = reshape_distribution(quantity_of_pizzas, team_distribution)
+        team_distribution = reshape_distribution(quantity_of_pizzas, team_distribution)
         team_distribution = dict(team_distribution)
+        del team_distribution['done']
 
-    print(pizzas_to_deliver_v1(team_distribution, pizzas))
-    print(team_distribution) ## first output
-    print(pizzas)
-    print(quantity_of_pizzas)
+    delivered_pizzas = pizzas_to_deliver_v1(team_distribution, pizzas)
+    
+    filename = os.path.basename(input_file)
+    write_output_file(filename, delivered_pizzas)
 
 
 if __name__ == '__main__':
